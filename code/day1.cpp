@@ -18,6 +18,7 @@ main (int argc, char *argv[]) {
     // 
     int dial = 50;
     size_t zero_count = 0;
+    size_t zero_cross = 0;
 
     // read the input
     std::ifstream in(argv[1]);
@@ -35,13 +36,47 @@ main (int argc, char *argv[]) {
       }
       // cout << dir << "\t" << dist << endl;
 
-      dial += dist;
-      dial %= 100;
       // cout << dial << "\t";
-      dial = (dial >= 0) ? dial : 100 + dial;
- 
-      // cout << dial << endl;
+  
+      bool zero_before = (dial == 0);
 
+      dial += dist;
+      // cout << dial << "\t";
+
+      int div_after = dial / 100;
+      int mod_after = dial % 100;
+      
+      // cout << div_after << "\t";
+      // cout << mod_after << "\t";
+
+      if (div_after > 0) {
+        zero_cross += div_after;
+      }
+      else if (div_after < 0) {
+        zero_cross += (-div_after);
+      }
+      // correct for crossing a zero from the strictly positive side 
+      if (!zero_before & (dial <= 0)) {
+        ++zero_cross;
+      }
+
+/*
+      if (dial == 0) {
+       ++zero_cross;
+      }
+      else if (div_after > 0) {
+        zero_cross += (div_after);
+      }
+      else if (dial < 0) {
+        zero_cross += (-div_after + 1); 
+      }
+*/      
+      // cout << zero_cross << "\t";
+
+      dial = mod_after;
+      
+      dial = (dial >= 0) ? dial : 100 + dial;
+      // cout << dial << endl;
       // cout << endl;
 
       if (!dial) {
@@ -51,7 +86,8 @@ main (int argc, char *argv[]) {
     }
     in.close();
    
-    cout << zero_count << endl;
+    cout << "Number of zero pointing: " << zero_count << endl;
+    cout << "Number of zero crossing: " << zero_cross << endl;
   }
   catch (const std::exception &e) {
     cerr << "ERROR: " << e.what() << endl;

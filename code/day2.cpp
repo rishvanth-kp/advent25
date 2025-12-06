@@ -18,10 +18,49 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
 
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::string;
+using std::vector;
+
+size_t
+get_n_digits (size_t in) {
+  size_t n_digits = 0;
+  while (in) {
+    in /= 10;
+    ++n_digits;
+  }
+  return n_digits;
+}
+
+size_t
+pow (size_t base, size_t exp) {
+  size_t out = 1;
+  while (exp) {
+    out = out * base;
+    --exp;
+  }
+  return out;
+}
+
+static void
+split_string (const string &in, vector<string> &tokens,
+              const char delim = ':') {
+
+  tokens.clear();
+  size_t start = 0;
+  size_t end = in.find(delim);
+  while (end != string::npos) {
+    tokens.push_back(in.substr(start, end - start));
+    start = ++end;
+    end = in.find(delim, start);
+  }
+  tokens.push_back(in.substr(start));
+}
 
 int
 main (int argc, char* argv[]) {
@@ -30,6 +69,75 @@ main (int argc, char* argv[]) {
       throw std::runtime_error("day2 [infile]");
     }
 
+    // read and parse the input file
+    std::ifstream in(argv[1]);
+    if (!in)
+      throw std::runtime_error("cannot open file");
+
+    string line;
+    getline(in, line);
+    vector<string> ranges;
+    split_string(line, ranges, ',');
+    in.close();   
+ 
+    size_t sum_invalid = 0;
+
+    // process each range
+    for (auto it = ranges.cbegin(); it != ranges.cend(); ++it) {
+      // cout << *it << endl;
+      // parse the range
+      vector<string> from_to;
+      split_string(*it, from_to, '-');
+      size_t range_from = std::stol(from_to[0]);
+      size_t range_to = std::stol(from_to[1]);
+      // cout << range_from << "\t" << range_to << "\t"  
+      //      << (range_to - range_from + 1) << endl;
+
+      // get the number of digits
+      size_t n_digits = get_n_digits(range_from);
+      bool is_even = !(n_digits % 2);
+  
+      size_t pow_n = pow(10, n_digits);
+      size_t pow_n_by_2 = pow(10, n_digits / 2);
+
+      // cout << range_from << "\t" << n_digits << "\t" 
+      //      << is_even << "\t" << pow_n << "\t" << pow_n_by_2 << endl; 
+
+      for (size_t i = range_from; i <= range_to; ++i) {
+        // check if the current number of digits changed
+        if (i / pow_n) {
+          ++n_digits;
+          is_even = !is_even;
+          pow_n = pow(10, n_digits);
+          pow_n_by_2 = pow(10, n_digits / 2);
+          // cout << i << "\t" << n_digits << "\t" 
+          //     << is_even << "\t" << pow_n << "\t" << pow_n_by_2 << endl; 
+        }
+
+        // need to process only if the number of digits is even
+        if (is_even) {
+          // check the the lower half of the number matches the upper half
+          // get the upper half
+          size_t upper_half = i / pow_n_by_2;
+
+          // get the lower helf
+          size_t lower_half = i % pow_n_by_2;
+
+          // check if they match
+          if (upper_half == lower_half) {
+            // cout << "match: " << i << endl;
+            sum_invalid += i;
+          }
+        }
+  
+      } 
+
+      // cout << endl;
+    }
+
+    cout << "Sum of invalid IDs: " << sum_invalid << endl;
+
+      
   }
   catch (const std::exception &e) {
     cerr << "ERROR: " << e.what() << endl;

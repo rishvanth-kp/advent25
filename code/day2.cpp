@@ -81,6 +81,7 @@ main (int argc, char* argv[]) {
     in.close();   
  
     size_t sum_invalid = 0;
+    size_t sum_invalid_p2 = 0;
 
     // process each range
     for (auto it = ranges.cbegin(); it != ranges.cend(); ++it) {
@@ -92,6 +93,11 @@ main (int argc, char* argv[]) {
       size_t range_to = std::stol(from_to[1]);
       // cout << range_from << "\t" << range_to << "\t"  
       //      << (range_to - range_from + 1) << endl;
+
+
+      /************************************************************************/
+      // part 1
+      /************************************************************************/
 
       // get the number of digits
       size_t n_digits = get_n_digits(range_from);
@@ -129,13 +135,47 @@ main (int argc, char* argv[]) {
             sum_invalid += i;
           }
         }
+ 
+
+        // part 2
+
+        bool match_found = false;
+        size_t repeat_size = 1;
+        while (!match_found && (repeat_size <= (n_digits / 2))) {
+          // cout << i << "\t" << repeat_size << endl;
+          // need to check only if j is divisible by the number of digits
+          if (!(n_digits % repeat_size)) {
+         
+            bool match = true;
+            size_t check_digit = i;
+            size_t pow_j = pow(10, repeat_size);
+            size_t reminder = check_digit % pow_j;
+            while (match && (check_digit >= pow_j)) {
+              check_digit /= pow_j;
+              if (reminder != (check_digit % pow_j)) {
+                match = false;
+              }
+            }
+
+            if (match) {
+              match_found = true;
+              sum_invalid_p2 += i;
+              // cout << i << endl;
+            }
   
+          } 
+          ++repeat_size;
+        }
+
+
+ 
       } 
 
-      // cout << endl;
+
     }
 
-    cout << "Sum of invalid IDs: " << sum_invalid << endl;
+    cout << "Sum of invalid IDs (part 1): " << sum_invalid << endl;
+    cout << "Sum of invalid IDs (part 2): " << sum_invalid_p2 << endl;
 
       
   }

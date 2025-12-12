@@ -17,7 +17,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-PROGS = day1 day2
+PROGS = day1 day2 day3
 
 CXX = g++
 CXXFLAGS = -Wall -std=c++11

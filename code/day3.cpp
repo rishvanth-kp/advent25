@@ -19,11 +19,22 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <limits>
 
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
+
+static size_t
+pow (size_t base, size_t exp) {
+  size_t out = 1;
+  while (exp) {
+    out = out * base;
+    --exp;
+  }
+  return out;
+}
 
 static void
 get_largest_digit(string &number, size_t start_pos, size_t end_pos, 
@@ -54,7 +65,8 @@ main (int argc, char* argv[]) {
     }
  
  
-    size_t max_joltage = 0;
+    size_t max_joltage_2 = 0;
+    size_t max_joltage_12 = 0;
     string digit;
     while (getline(in, digit)) {
       // cout << digit;
@@ -70,18 +82,42 @@ main (int argc, char* argv[]) {
         max_digit_2, max_digit_2_pos);
       // cout << "\t" << max_digit_2 << "\t" << max_digit_2_pos;
      
-      size_t joltage = (max_digit_1 * 10) + max_digit_2;
+      size_t joltage_2 = (max_digit_1 * 10) + max_digit_2;
       // cout << "\t" << joltage;
       
-      max_joltage += joltage;    
+      max_joltage_2 += joltage_2;    
   
       // cout << endl;
-       
+
+      // part 2
+      size_t joltage_12 = 0;
+      size_t max_digit = 0;
+      size_t max_digit_pos = 0;
+      get_largest_digit(digit, 0, digit.length() - 11, 
+        max_digit, max_digit_pos);
+      joltage_12 += (max_digit * pow(10, 11));
+      // cout << "\t" << max_digit;
+      // cout << "\t" << max_digit_pos;
+      // cout << "\t" << joltage_12;
+      for (int i = 10; i >= 0; --i) {
+        get_largest_digit(digit, max_digit_pos + 1, digit.length() - i, 
+        max_digit, max_digit_pos);
+        joltage_12 += (max_digit * pow(10, i));
+        // cout << "\t" << max_digit;
+        // cout << "\t" << max_digit_pos;
+        // cout << "\t" << joltage_12;
+      } 
+      // cout << "\t" << joltage_12;
+      max_joltage_12 += joltage_12;
+ 
+      // cout << endl; 
+ 
     }
 
     in.close();
 
-    cout << "Maxmimum joltage: " << max_joltage << endl; 
+    cout << "Maxmimum joltage (2 pack): " << max_joltage_2 << endl; 
+    cout << "Maxmimum joltage (12 pack): " << max_joltage_12 << endl; 
   }
   catch (const std::exception &e) {
     cerr << "ERROR: " << e.what() << endl;

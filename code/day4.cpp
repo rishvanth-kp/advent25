@@ -58,7 +58,7 @@ main (int argc, char* argv[]) {
     constexpr size_t max_adj = 4;
     size_t round = 0;  
 
-    // dummy add one postion to frirst
+    // dummy add one postion for passing the while for the first time
     vector<size_t> roll_row(1, 0);
     vector<size_t> roll_col(1, 0);
 
@@ -104,7 +104,8 @@ main (int argc, char* argv[]) {
         }
         // cout << endl;
       }
-      
+     
+      ++round; 
       cout << "Rolls to move in round " << round << ": " 
            << roll_row.size()  << endl;
 

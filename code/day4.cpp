@@ -56,41 +56,67 @@ main (int argc, char* argv[]) {
     size_t rolls = 0;
     constexpr int window = 1;
     constexpr size_t max_adj = 4;
-    for (size_t i = 0; i < stock.size(); ++i) {
-      for (size_t j = 0; j < stock[i].size(); ++j) {
-        // cout << i << "\t" << j;
-        // cout << stock[i][j] << "\t";
+    size_t round = 0;  
 
-        size_t adj_count = 0;
-        bool has_paper = false;
-        // need to check only if there is a roll
-        
-        if (stock[i][j] == '@') {
-          has_paper = true;
-          for (int k = -window; k <= window; ++k){
-            for (int l = -window; l <= window; ++l) {
-              if ((i + k >= 0) & (i + k < stock.size()) &
-                  (j + l >= 0) & (j + l < stock[i].size()) &
-                  (k || l)) {
-                // cout << "\t\t" << k << "\t" << l; 
-                if (stock[i + k][j + l] == '@') {
-                  ++adj_count;
-                }
-              } 
+    // dummy add one postion to frirst
+    vector<size_t> roll_row(1, 0);
+    vector<size_t> roll_col(1, 0);
+
+    while(roll_row.size()) {
+   
+      // reset the move postions 
+      roll_row.clear();
+      roll_col.clear();
+
+      for (size_t i = 0; i < stock.size(); ++i) {
+        for (size_t j = 0; j < stock[i].size(); ++j) {
+          // cout << i << "\t" << j;
+          // cout << stock[i][j] << "\t";
+
+          size_t adj_count = 0;
+          bool has_paper = false;
+          // need to check only if there is a roll
+          
+          if (stock[i][j] == '@') {
+            has_paper = true;
+            for (int k = -window; k <= window; ++k){
+              for (int l = -window; l <= window; ++l) {
+                if ((i + k >= 0) & (i + k < stock.size()) &
+                    (j + l >= 0) & (j + l < stock[i].size()) &
+                    (k || l)) {
+                  // cout << "\t\t" << k << "\t" << l; 
+                  if (stock[i + k][j + l] == '@') {
+                    ++adj_count;
+                  }
+                } 
+              }
             }
           }
-        }
-        // cout << "\t" << has_paper << "\t" << adj_count;
-        if (has_paper && (adj_count < max_adj)) {
-          ++rolls;
+          // cout << "\t" << has_paper << "\t" << adj_count;
+          if (has_paper && (adj_count < max_adj)) {
+            ++rolls;
+      
+            // keep track of postions to move
+            roll_row.push_back(i);
+            roll_col.push_back(j);
+          }
+          // cout << endl;
         }
         // cout << endl;
       }
-      // cout << endl;
+      
+      cout << "Rolls to move in round " << round << ": " 
+           << roll_row.size()  << endl;
+
+
+      // remove the moved positions
+      for (size_t i = 0; i < roll_row.size(); ++i) {
+        stock[roll_row[i]][roll_col[i]] = '.';
+      } 
+
     }
-    
-    cout << "Total rolls to move: " << rolls << endl;
-    
+
+    cout << "Total rolls moved: " << rolls << endl; 
 
   } 
   catch (const std::exception &e) {

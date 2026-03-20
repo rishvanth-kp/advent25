@@ -116,12 +116,14 @@ main (int argc, char* argv[]) {
       */
     }
 
+    /*
     cout << "All the fresh stuff" << endl;
     for(auto it = fresh.begin(); it != fresh.end(); ++it) 
       cout << it->first << " " << it->second << endl;
     cout << endl; 
+    */
 
-    cout << "Checking for freshness" << endl;
+    // cout << "Checking for freshness" << endl;
     // get the list of available ingredients
     size_t n_fresh = 0;
     while (getline(in, line)) {
@@ -144,7 +146,21 @@ main (int argc, char* argv[]) {
     // close the file   
     in.close();
 
-    cout << "Number of fresh ingredients: " << n_fresh << endl;
+    cout << "Number of availble fresh ingredients: " << n_fresh << endl;
+
+
+    // part 2
+    size_t all_fresh = 0;
+    for (auto it = fresh.begin(); it != fresh.end(); ++it) {
+      if (it->second) {
+        auto next_it = it;
+        ++next_it;
+        // cout << "adding fresh: " << it->first << " " << next_it->first << endl;
+        all_fresh += (next_it->first - it->first);
+      }
+    }    
+    cout << "Number of fresh ingredients: " << all_fresh << endl;
+  
   }
   catch (const std::exception &e) {
     cerr << "ERROR: " << e.what() << endl;

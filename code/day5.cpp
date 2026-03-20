@@ -46,24 +46,65 @@ main (int argc, char* argv[]) {
     // Storing the first element in a binary search tree.
     // with each node containing the last element.
     map<size_t, size_t> fresh;
+    // start with a whole range of 0
+    fresh.insert(pair<size_t, size_t>(0, 0));
  
     string line;
     // read until the first empty line
     while (getline(in, line) && line.length()) {
-      cout << line << endl;
+      // cout << line << endl;
       // parse the start and end ids
       size_t pos = line.find('-');
       // cout << pos << "\t";
-      size_t start = std::stoi(line.substr(0, pos));
-      size_t end = std::stoi(line.substr(pos + 1)); 
+      size_t start = std::stol(line.substr(0, pos));
+      size_t end = std::stol(line.substr(pos + 1)); 
       // cout << start << "\t" << end << endl;
 
       // need to check if the new pair is contained within 
       // an already existing pair. If it is, do not add a
       // new element, just extend the existing one. 
       // This needs to be done to prevent an error when a 
-      // new pair is fully contained in a old pair.      
+      // new pair is fully contained in a old pair.
+
+      
+      auto s_it = fresh.upper_bound(start);
+      auto e_it = fresh.upper_bound(end);
+      --s_it;
+      --e_it;
+      // both are pointing to the same element
+      if (s_it == e_it) {
+        // outider of existing elements
+        if (!s_it->second && !e_it->second) {
+          // fresh.insert(pair<size_t, size_t>(start, 1));
+          fresh[start] = 1;
+          fresh.insert(pair<size_t, size_t>(end + 1, 0));
+          // fresh[end + 1] = 0;
+        }
+        // else contained inside an existing elements 
+        // there is nothing to be done
+      }
+      // 
+      else {
+        map<size_t, size_t>::iterator erase_s_it, erase_e_it;
+        if (!s_it->second && e_it->second) {
+          auto it = fresh.insert(pair<size_t, size_t>(start, 1));
+          fresh.erase(++it.first, ++e_it);
+        }
+        else if (s_it->second && !e_it->second) {
+          auto it = fresh.insert(pair<size_t, size_t>(end + 1, 0));
+          fresh.erase(++s_it, it.first);
+        }
+        else if (!s_it->second && !e_it->second) {
+          auto it = fresh.insert(pair<size_t, size_t>(start, 1));
+          auto jt = fresh.insert(pair<size_t, size_t>(end + 1, 0));
+          fresh.erase(++it.first, jt.first);
+        }
+        else if (s_it->second && e_it->second) {
+          fresh.erase(++s_it, ++e_it);
+        }
+      }
  
+      /*
       auto it = fresh.insert(pair<size_t, size_t>(start, end));
       // if the first already exists, change the end
       // if it is greater than the current value
@@ -72,18 +113,38 @@ main (int argc, char* argv[]) {
           it.first->second = end;
         }
       }
-
+      */
     }
 
-    cout << "foo" << endl;
+    cout << "All the fresh stuff" << endl;
+    for(auto it = fresh.begin(); it != fresh.end(); ++it) 
+      cout << it->first << " " << it->second << endl;
+    cout << endl; 
+
+    cout << "Checking for freshness" << endl;
     // get the list of available ingredients
+    size_t n_fresh = 0;
     while (getline(in, line)) {
-      cout << line << endl;
+      // cout << line << endl;
+
+      // search the fresh ingredient list
+      size_t item = std::stol(line);
+      auto it = fresh.upper_bound(item);
+      // it points to the element larger than item, and so
+      // decrement it to point to a smaller element
+      --it;
+      // cout << it->first << " "  << it->second << endl;
+      if (it->second) {
+        // cout << item << " is fresh" << endl;
+        ++n_fresh;
+      }
+      // cout << endl;
     }
 
     // close the file   
     in.close();
 
+    cout << "Number of fresh ingredients: " << n_fresh << endl;
   }
   catch (const std::exception &e) {
     cerr << "ERROR: " << e.what() << endl;

@@ -133,20 +133,60 @@ main (int argc, char* argv[]) {
     // Part 2
     ///////////////////////////////////////////////////////////////////////////
    
-    cout << "part 2" << endl;
+    // cout << "part 2" << endl;
  
-    // go to beginning of file 
+    // go to beginning of file
+    in.clear();
     in.seekg(0, in.beg);
     vector<vector<uint8_t>> digits;
-    getline(in, line);
-    cout << line << endl;
     while(getline(in, line)) {
       // add a tailing space to make it easier
       line += ' ';
+      // cout << line << endl;
+      
+      digits.push_back(vector<uint8_t>{});
+            
+      for (size_t i = 0; i < line.size(); ++i) {
+        digits.back().push_back(line[i]);
+      }
 
-      cout << line << endl;
-    }   
+    } 
 
+
+    vector<size_t> results_p2 = op;
+    size_t index = 0;  
+
+    for (size_t i = 0; i < digits[0].size(); ++i) {
+      string num;
+      for (size_t j = 0; j < digits.size() - 1; ++j) {
+        if (digits[j][i] != ' ')
+          num += digits[j][i];
+      }
+      
+      if (num.length()) {
+        // cout << std::stoi(num) << endl;
+        if (op[index]) {
+          results_p2[index] *= std::stoi(num);
+        }
+        else {
+          results_p2[index] += std::stoi(num);
+        }
+      }
+      else {
+        ++index;
+      }
+    }  
+
+
+    size_t results_p2_sum = 0;
+    for (auto it = results_p2.begin(); it != results_p2.end(); ++it) {
+      // cout << *it << " ";
+      results_p2_sum += *it;
+    }
+    // cout << endl;
+    cout << "sum of problems (cephalopod style): " << results_p2_sum << endl;
+
+    // close the file
     in.close();
     
 

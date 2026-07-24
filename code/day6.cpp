@@ -119,8 +119,6 @@ main (int argc, char* argv[]) {
 
     }
 
-    // close the input file
-    in.close();
     
     size_t result_sum = 0;
     for (auto it = result.begin(); it != result.end(); ++it) {
@@ -129,6 +127,29 @@ main (int argc, char* argv[]) {
     }
     // cout << endl;
     cout << "sum of problems: " << result_sum << endl;
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Part 2
+    ///////////////////////////////////////////////////////////////////////////
+   
+    cout << "part 2" << endl;
+ 
+    // go to beginning of file 
+    in.seekg(0, in.beg);
+    vector<vector<uint8_t>> digits;
+    getline(in, line);
+    cout << line << endl;
+    while(getline(in, line)) {
+      // add a tailing space to make it easier
+      line += ' ';
+
+      cout << line << endl;
+    }   
+
+    in.close();
+    
+
   }
   catch (const std::exception &e) {
     cerr << "ERROR: " << e.what() << endl;

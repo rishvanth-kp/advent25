@@ -55,12 +55,13 @@ main (int argc, char* argv[]) {
       else 
         beam.push_back(0);
     }
-  
+ 
+    /* 
     for (const size_t i : beam) {
       cout << i << " ";
     }
     cout << endl;
-
+    */
   
     // process the rest of the splitters.
     // the even lines do not need to be processed, but not over-optimizing
@@ -70,8 +71,8 @@ main (int argc, char* argv[]) {
         if (line[i] == '^') {
           if (beam[i]) {
             // split the beam
-            beam[i - 1] = 1;
-            beam[i + 1] = 1;
+            beam[i - 1] += beam[i];
+            beam[i + 1] += beam[i];
             // zero the current location
             beam[i] = 0;
 
@@ -82,13 +83,22 @@ main (int argc, char* argv[]) {
       }
 
   
+      /*
       for (const size_t i : beam) {
         cout << i << " ";
       }
       cout << endl;
+      */
 
     }
     cout << "Number of splits: " << split_count << endl; 
+
+    size_t timeline_count = 0;
+    for(const size_t i : beam) {
+      timeline_count += i;
+    }
+    
+    cout << "Number of timelines: " << timeline_count << endl;
 
     // close the file
     in.close();
